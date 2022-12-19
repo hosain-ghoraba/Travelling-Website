@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // });
 
 app.get('/' , function(req,res){
-  res.render('searchresults');
+  res.render('login');
 });
 
 app.post('/' , function(req,res){ // must first check if creditials are in the database
