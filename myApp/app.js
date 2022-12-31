@@ -3,7 +3,7 @@ var express = require('express');
 var path = require('path');
 var fs = require('fs');
 const { json } = require('express');
-const { MongoClient } = require('mongodb');
+// const { MongoClient } = require('mongodb');
 var app = express();
 
 
@@ -49,13 +49,13 @@ var z = JSON.parse(data);
 -------------------------------------------------------------------------- database connection 
 */
 // these lines lines should be written whenever inserting or getting any thing from the database ( which will happen in some get and post methods)
-MongoClient.connect("mongodb://127.0.0.1:27017" , function(err,client){ // the 127.0.0.1:27017 is from the email sent by dr amr
-if(err) throw err;
-var db = client.db('myDB');
-// inserting records 
-db.collection('myCollection').insertOne({username: "ali" , password: "abc"});
-// getting a certain record
-});
+// MongoClient.connect("mongodb://127.0.0.1:27017" , function(err,client){ // the 127.0.0.1:27017 is from the email sent by dr amr
+// if(err) throw err;
+// var db = client.db('myDB');
+// // inserting records 
+// db.collection('myCollection').insertOne({username: "ali" , password: "abc"});
+// // getting a certain record
+// });
 //------------------------------------------------- get and post in guc
 
 app.get('/search',function(req,res){
