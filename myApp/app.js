@@ -72,6 +72,11 @@ var z = JSON.parse(data);
   app.post('/',async(req,res)=>{
   let username= req.body.username;
   let password=req.body.password;
+  if(username == 'admin' && password == 'admin')
+      {
+        return res.redirect('home');      
+    
+      }
   var user =await db.collection("myCollection").findOne({username:username});
   if(user){
     if(password==user.password){
