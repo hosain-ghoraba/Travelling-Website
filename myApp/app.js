@@ -3,7 +3,8 @@ var express = require('express');
 var path = require('path');
 var fs = require('fs');
 const { json } = require('express');
-const { MongoClient } = require('mongodb');
+var alert=require('alert'); // new 
+var session = require("express-session"); // new
 var app = express();
 
 
@@ -13,6 +14,13 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({ // new 
+    secret:'secret key',
+    resave:false,
+    saveUninitialized:false
+  })
+  );
 
 // new for depolyment
 const port = process.env.PORT || 3000;
@@ -46,22 +54,74 @@ fs.writeFileSync("users.json",y);
 var data = fs.readFileSync("users.json");
 var z = JSON.parse(data);
 
--------------------------------------------------------------------------- database connection 
+-------------------------------------------------------------------------- login and registeration
 */
-// these lines lines should be written whenever inserting or getting any thing from the database ( which will happen in some get and post methods)
-MongoClient.connect("mongodb://127.0.0.1:27017" , function(err,client){ // the 127.0.0.1:27017 is from the email sent by dr amr
-if(err) throw err;
-var db = client.db('myDB');
-// inserting records 
-db.collection('myCollection').insertOne({username: "ali" , password: "abc"});
-// getting a certain record
-});
-// ------------------------------------------------- get and post in guc
+
+  const MongoClient = require('mongodb').MongoClient;
+  let db;
+  const client = new MongoClient('mongodb://0.0.0.0:27017');
+  client.connect((err) => {
+    if (err) throw err;
+    console.log('Successfully connected to MongoDB server');
+    db = client.db('myDB');
+  });
+  
+  app.get('/',function(req,res) {
+  res.render('login');
+  })
+  app.post('/',async(req,res)=>{
+  let username= req.body.username;
+  let password=req.body.password;
+  var user =await db.collection("myCollection").findOne({username:username});
+  if(user){
+    if(password==user.password){
+      session=req.session;
+      session.username=username;
+      res.render('home');
+    }else{
+      alert("wrong password");
+      res.redirect('/');
+    }
+  }else{
+    alert("wrong username");
+    res.redirect('/');
+  }
+  });
+  app.get('/registration',function(req,res){
+  
+  res.render('registration');
+  
+  });    
+  app.post('/register', function(req, res)  {
+    const { username, password } = req.body;
+  
+    if (!username || !password) {
+      return res.redirect('registration');
+    }
+  
+    db.collection('myCollection').countDocuments({ username }, (err, count) => {
+      if (err) {
+        throw(err);
+      } else if (count > 0) {
+        alert("username already found");
+        res.redirect('registration');
+      } else {
+        db.collection('myCollection').insertOne({ username, password, wantToGo: [] });
+        res.redirect('/');
+      }
+    });
+  });
+ 
+//------------------------------------------------------------------------- want to go  
+
+
+
+// ------------------------------------------------- -------------------------search
 
 app.get('/search',function(req,res){
     res.render('searchresults',{toShow: [] , Msg: ""});
 });
-app.post('/search' , function(req,res){ // i think it must take a parameter (the text written in search bar)
+app.post('/search' , function(req,res){ 
     const word = req.body.Search
     const all_destinations = ["inca","annapurna","paris","rome","santorini","bali"];
     const returned_destinations = [];
@@ -80,14 +140,10 @@ app.post('/search' , function(req,res){ // i think it must take a parameter (the
     
 });
 
-app.get('/' , function(req,res){
-    res.render('home');
-});
 
 
-app.get('/registration',function(req,res){
-    res.render('registration');
-});
+// ------------------------------------------ all other simple get functions 
+
 app.get('/home',function(req,res){
     res.render('home');
 });
@@ -119,36 +175,4 @@ app.get('/bali',function(req,res){
     res.render('bali');
 });  
 //-----------------------------------------------------------------------------------------
-
-
-
-
-
-
 app.listen(port);
-
-
-/*  button to lead to a page
-
-
-/*
-
-if(!("inca".includes(word))){
-            document.getElementById('inca').style.visibility = 'hidden';
-        }
-        if(!("annapurna".includes(word))){
-            document.getElementById('annapurna').style.visibility = 'hidden';
-        }
-        if(!("paris".includes(word))){
-            document.getElementById('paris').style.visibility = 'hidden';
-        }
-        if(!("rome".includes(word))){
-            document.getElementById('rome').style.visibility = 'hidden';
-        }
-        if(!("bali".includes(word))){
-            document.getElementById('bali').style.visibility = 'hidden';
-        }
-        if(!("santorini".includes(word))){
-            document.getElementById('santorini').style.visibility = 'hidden';
-        }
-*/
