@@ -25,7 +25,7 @@ app.use(session({ // new
 // new for depolyment
 const port = process.env.PORT || 3000;
 
-// ----------------------------------------------------------------------------------- the part above is fixed
+// ----------------------------------------------------------------------------------- login and registeration
 
  /*
 
@@ -118,52 +118,37 @@ var z = JSON.parse(data);
   });
  
 //------------------------------------------------------------------------- want to go  
-
-app.get('/wanttogo',function(req,res){
-  var v4 = fs.readFileSync('usernames.mongodb')
-  var v41= mongodb.parse(v4)
-  var wl = []
-  for(let i=0;i<v41.length;i++){
-   if(v41[i].username==req.session.username){
-       wl = v41[i].wanttogo
-       res.render('wanttogo',{
-       tasks : wl
-   })
-   }
-   }
-})
-app.post('/add',function(req,res){
-  var v3 = fs.readFileSync('usernames.mongodb')
-  var Bool3  = checkwanttogo(req.session.username,mongodb.parse(v3),req.body.addtowanttogo)
-  if(Bool3){
-      res.send('<p> Wanttogo already contains this city <p>')
+app.get('/wanttogo',async(req,res)=>{
+  if(session.username == null)
+  {
+    return res.redirect('/');
   }
   else{
-     v31 = mongodb.parse(v3)
-     for(let i=0;i<v31.length;i++){
-      if(v31[i].username==req.session.username){
-          v31[i].wanttogo.push(req.body.addtowanttogo)
-          fs.writeFileSync('usernames.mongodb')
-          var v4 = fs.readFileSync('usernames.mongodb')
-          var v41= mongodb.parse(v4)
-          var wl = []
-          for(let i=0;i<v41.length;i++){
-           if(v41[i].username==req.session.username){
-               wl = v41[i].wanttogo
-               res.render('wanttogo',{
-               tasks : wl
-           })
-           }
-           }
-      }
-     }
+  var user =  await db.collection('myCollection').findOne({username:req.session.username})
+  var passed_Array_From_Get_Function = user.wantToGo
+  res.render('wanttogo',{passed_Array_From_Get_Function: passed_Array_From_Get_Function})
   }
 })
-
+   app.post('/add',async function(req,res){
+    var city = req.body.button;
+    var user=await db.collection("myCollection").findOne({username:req.session.username});
+    var cities=user.wantToGo;
+    if(cities.includes(city)){
+      alert("already added");
+    }else{
+      db.collection("myCollection").updateOne({username: req.session.username},{$push: { wantToGo: city }});
+    }  
+    res.redirect(city);
+});
 // ------------------------------------------------- -------------------------search
-
 app.get('/search',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else{
     res.render('searchresults',{toShow: [] , Msg: ""});
+  }
 });
 app.post('/search' , function(req,res){ 
     const word = req.body.Search
@@ -184,39 +169,106 @@ app.post('/search' , function(req,res){
     
 });
 
-
-
 // ------------------------------------------ all other simple get functions 
 
 app.get('/home',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else{
     res.render('home');
+  }
 });
 app.get('/hiking',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else{
+
+  
     res.render('hiking'); 
+  }
 });
 app.get('/inca',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else
+  {
     res.render('inca');     
+  }
 });
 app.get('/annapurna',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else
+  {
     res.render('annapurna');    
+  }
 });
 app.get('/cities',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else{
     res.render('cities');    
+  }
 });    
 app.get('/paris',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else
+  {
     res.render('paris');
+  }
 });           
 app.get('/rome',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else{
     res.render('rome');
+  }
 }); 
 app.get('/islands',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else{
+
+  
     res.render('islands');
+  }
 });
 app.get('/santorini',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else
+  {
     res.render('santorini');
+  }
 }); 
 app.get('/bali',function(req,res){
+  if(session.username == null)
+  {
+    return res.redirect('/');
+  }
+  else
+  {
     res.render('bali');
+  }
 });  
 //-----------------------------------------------------------------------------------------
 app.listen(port);
