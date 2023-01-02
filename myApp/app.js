@@ -119,7 +119,46 @@ var z = JSON.parse(data);
  
 //------------------------------------------------------------------------- want to go  
 
-
+app.get('/wanttogo',function(req,res){
+  var v4 = fs.readFileSync('usernames.mongodb')
+  var v41= mongodb.parse(v4)
+  var wl = []
+  for(let i=0;i<v41.length;i++){
+   if(v41[i].username==req.session.username){
+       wl = v41[i].wanttogo
+       res.render('wanttogo',{
+       tasks : wl
+   })
+   }
+   }
+})
+app.post('/add',function(req,res){
+  var v3 = fs.readFileSync('usernames.mongodb')
+  var Bool3  = checkwanttogo(req.session.username,mongodb.parse(v3),req.body.addtowanttogo)
+  if(Bool3){
+      res.send('<p> Wanttogo already contains this city <p>')
+  }
+  else{
+     v31 = mongodb.parse(v3)
+     for(let i=0;i<v31.length;i++){
+      if(v31[i].username==req.session.username){
+          v31[i].wanttogo.push(req.body.addtowanttogo)
+          fs.writeFileSync('usernames.mongodb')
+          var v4 = fs.readFileSync('usernames.mongodb')
+          var v41= mongodb.parse(v4)
+          var wl = []
+          for(let i=0;i<v41.length;i++){
+           if(v41[i].username==req.session.username){
+               wl = v41[i].wanttogo
+               res.render('wanttogo',{
+               tasks : wl
+           })
+           }
+           }
+      }
+     }
+  }
+})
 
 // ------------------------------------------------- -------------------------search
 
