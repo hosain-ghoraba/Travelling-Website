@@ -8,4 +8,5 @@
      
 3 - It only works nearly properly if it is connected to a LOCAL "Mongodb" database (on the computer running the application) , with the same database and collection 
     names hardcoded in the application , <br />
-    but not designed to work properly on the deployed version of it , with link : https://team48-networks.onrender.com/
+    deployed version link : https://team48-networks.onrender.com/ <br />
+    use username 'admin' and password 'admin' to login in the deployed version to test (part) of its functionalities , full functionalities can only be tested locally
