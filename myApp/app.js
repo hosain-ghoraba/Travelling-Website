@@ -74,6 +74,8 @@ var z = JSON.parse(data);
   let password=req.body.password;
   if(username == 'admin' && password == 'admin')
       {
+        session=req.session;
+        session.username=username;
         return res.redirect('home');      
     
       }
